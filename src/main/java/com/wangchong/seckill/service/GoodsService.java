@@ -25,10 +25,12 @@ public class GoodsService {
 
 
     public List<Goods> list(){
-        //redisTemplate.opsForValue().set("test","test");
 
-       // System.out.println(redisTemplate.opsForValue().get("test"));
         return goodsDao.list();
+    }
+
+    public Goods getById(Long id){
+        return goodsDao.getById(id);
     }
 
 

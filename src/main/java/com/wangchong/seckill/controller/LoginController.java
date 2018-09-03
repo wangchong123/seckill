@@ -2,14 +2,18 @@ package com.wangchong.seckill.controller;
 
 import com.wangchong.seckill.entity.User;
 import com.wangchong.seckill.service.UserService;
+import com.wangchong.seckill.util.CodeMsg;
 import com.wangchong.seckill.util.Result;
+import com.wangchong.seckill.vo.LoginVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * @Author: wangchong
@@ -24,8 +28,8 @@ public class LoginController {
 
 
     @RequestMapping("/login")
-    public Result login(HttpServletRequest request,String username,String password){
-        User user = userService.login(username,password);
+    public Result login(HttpServletRequest request, @Valid LoginVo loginVo){
+        User user = userService.login(loginVo);
         if (user != null){
             request.getSession().setAttribute("user",user);
             return Result.success();

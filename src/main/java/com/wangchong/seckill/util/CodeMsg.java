@@ -11,6 +11,7 @@ public enum CodeMsg {
 
     USER_NOT_EXIST(-1,"用户不存在"),
     PASSWORD_ERROR(-2,"密码错误"),
+    BIND_ARGS_ERROR(-3,"%s"),
     SUCCESS(1,"success"),
     ERROR(-99,"error");
 
@@ -29,6 +30,10 @@ public enum CodeMsg {
 
     public String getMsg(){
         return this.msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     @Override

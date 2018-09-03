@@ -2,6 +2,7 @@ package com.wangchong.seckill.dao;
 
 import com.wangchong.seckill.entity.Goods;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
@@ -18,4 +19,7 @@ public interface GoodsDao {
 
     @Select("select * from goods")
     List<Goods> list();
+
+    @Select("select * from goods where id=#{id}")
+    Goods getById(@Param("id") Long id);
 }
