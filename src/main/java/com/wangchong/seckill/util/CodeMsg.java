@@ -9,8 +9,11 @@ import lombok.Data;
  */
 public enum CodeMsg {
 
+    USER_NOT_EXIST(-1,"用户不存在"),
+    PASSWORD_ERROR(-2,"密码错误"),
     SUCCESS(1,"success"),
-    ERROR(-1,"error");
+    ERROR(-99,"error");
+
 
     private int code;
     private String msg;

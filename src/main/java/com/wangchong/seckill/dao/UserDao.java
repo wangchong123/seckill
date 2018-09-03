@@ -15,6 +15,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserDao {
 
-    @Select("select * from user where username=?")
+    @Select("select * from user where username=#{username}")
     User getByUsername(@Param("username") String username);
 }

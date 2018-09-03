@@ -2,6 +2,7 @@ package com.wangchong.seckill.entity;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Date;
  * @Date : Created in 16:18 2018/8/31
  */
 @Data
-public class User {
+public class User implements Serializable{
 
     private Long id;
 
