@@ -13,8 +13,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitmqConfig {
 
+    public static final String queue = "seckill";
+
     @Bean
     public Queue queue(){
-        return new Queue("hello");
+        return new Queue(queue);
     }
 }

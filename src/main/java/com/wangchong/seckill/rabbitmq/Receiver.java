@@ -1,7 +1,10 @@
 package com.wangchong.seckill.rabbitmq;
 
+import com.alibaba.fastjson.JSON;
+import com.wangchong.seckill.service.OrderService;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +16,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class Receiver {
 
-    @RabbitListener(queues="hello")
+    @Autowired
+    private OrderService orderService;
+
+    @RabbitListener(queues=RabbitmqConfig.queue)
     public void process(String msg)  {
-            System.out.println("收到---" + msg);
+           SeckillMessage bean = JSON.parseObject(msg,SeckillMessage.class);
+           Long userId= bean.getUserId();
+           Long goodsId = bean.getGoodsId();
+           int  n =orderService.getSeckillOrder(goodsId,userId);
+           if(n > 0) return;
+           orderService.insertOrder(bean.getUserId(),bean.getGoodsId());
 
 
 

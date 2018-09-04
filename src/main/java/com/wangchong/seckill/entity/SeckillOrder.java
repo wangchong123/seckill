@@ -15,4 +15,6 @@ public class SeckillOrder {
     private Long orderId;
 
     private Long userId;
+
+    private Long goodsId;
 }

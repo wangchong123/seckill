@@ -5,10 +5,21 @@
     <title>Title</title>
 </head>
 <body>
-  welcome
+  <table>
+      <tr>
+          <td>商品名</td>
+          <td>价钱</td>
+          <td>操作</td>
+      </tr>
+      <#list list as l>
+          <tr>
+              <td>${l.name}</td>
+              <td>${l.price}</td>
+              <td><a href="/goods/toDetail?goodsId=${l.id}">详情</a></td>
+          </tr>
+      </#list>
+  </table>
 
-  <#list list as l>
-      ${l.name}
-  </#list>
+
 </body>
 </html>

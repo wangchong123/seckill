@@ -16,9 +16,9 @@ public class SeckillGoods {
 
     private Long goodsId;
 
-    private Integer seckillPrice;
+    private Integer price;
 
-    private Integer nums;
+    private Integer stock;
 
     private Date beginTime;
 

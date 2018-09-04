@@ -1,10 +1,12 @@
 package com.wangchong.seckill.dao;
 
 import com.wangchong.seckill.entity.Goods;
+import com.wangchong.seckill.entity.SeckillGoods;
 import com.wangchong.seckill.vo.SeckillInfoVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,11 +18,12 @@ import java.util.List;
  */
 @Mapper
 @Repository
-public interface GoodsDao {
+public interface SeckillGoodsDao {
 
-    @Select("select * from goods")
-    List<Goods> list();
+    @Select("select * from seckill_goods")
+    List<SeckillGoods> list();
 
-    @Select("select s.*,g.name from seckill_goods s ,goods g where s.goods_id=g.id and g.id=#{id}")
-    SeckillInfoVo getByGoodsId(@Param("id") Long id);
+    @Update("update seckill_goods set stock = stock - 1 where goods_id = #{goodsId} and stock > 0")
+    int reduceStock(@Param("goodsId") Long goodsId);
+
 }

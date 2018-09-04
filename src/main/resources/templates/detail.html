@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>detail</title>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css" />
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+</head>
+<body>
+
+ 商品名：<span id="goods_name"></span><br>
+ 秒杀价：<span id="goods_price"></span><br>
+ <span id="status"></span><br>
+ <button id="btn" onclick="seckill()">购买</button>
+<input type="hidden" value="${goodsId}" id="id">
+
+</body>
+</html>
+
+<script>
+
+    render();
+    function render(){
+        $.ajax({
+            url:"/goods/detail",
+            type:"post",
+            dataType:"json",
+            data:{
+                goodsId:$("#id").val()
+            },
+            success:function(data){
+                if(data.code == 1){
+                    $("#goods_name").text(data.data.name);
+                    $("#goods_price").text(data.data.price);
+                    var second = data.data.remainSecond;
+                    countDown(second)
+                }
+            }
+        })
+    }
+
+    function countDown(second){
+        var timeout;
+        if(second > 0){
+            $("#btn").attr("disabled",true)
+            $("#status").text("秒杀倒计时："+ second +"秒");
+            timeout = setTimeout(function(){
+                second = second - 1;
+                countDown(second)
+            },1000)
+        }else if(second == 0){
+            $("#status").text("秒杀进行中")
+            $("#btn").attr("disabled",false)
+            if(timeout){
+                clearTimeout(timeout);
+            }
+        }else{
+            $("#btn").attr("disabled",true)
+            $("#status").text("秒杀已结束");
+        }
+    }
+
+    function seckill(){
+        var id = $("#goodsId").val();
+        $.ajax({
+            url:"/seckill/seckill",
+            type:"post",
+            dataType:"json",
+            data:{
+                goodsId:id
+            },
+            success:function(data){
+                if(data.code == 1){
+                    doSeckill(id);
+                }
+            }
+        })
+    }
+
+    function doSeckill(id){
+
+    }
+
+</script>

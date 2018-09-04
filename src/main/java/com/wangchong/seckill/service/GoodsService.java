@@ -2,6 +2,7 @@ package com.wangchong.seckill.service;
 
 import com.wangchong.seckill.dao.GoodsDao;
 import com.wangchong.seckill.entity.Goods;
+import com.wangchong.seckill.vo.SeckillInfoVo;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,8 +30,9 @@ public class GoodsService {
         return goodsDao.list();
     }
 
-    public Goods getById(Long id){
-        return goodsDao.getById(id);
+    public SeckillInfoVo getByGoodsId(Long goodsId){
+        System.out.println(goodsId);
+        return goodsDao.getByGoodsId(goodsId);
     }
 
 
