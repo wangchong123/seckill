@@ -68,7 +68,7 @@
     }
 
     function seckill(){
-        var id = $("#goodsId").val();
+        var id = $("#id").val();
         $.ajax({
             url:"/seckill/seckill",
             type:"post",
@@ -78,14 +78,62 @@
             },
             success:function(data){
                 if(data.code == 1){
-                    doSeckill(id);
+                    var path = data.data;
+                    console.log(path)
+                    doSeckill(id,path);
                 }
             }
         })
     }
 
-    function doSeckill(id){
+    function doSeckill(id,path){
+        $.ajax({
+            url:"/seckill/doSeckill/" + path,
+            type:"post",
+            dataType:"json",
+            data:{
+                goodsId: id
+            },
+            success:function(data){
+                if(data.code == 1){
+                    getSeckillResult(id)
+                }else{
+                    layer.msg(data.msg)
+                }
+            }
+        })
+    }
 
+    function getSeckillResult(goodsId){
+        g_showLoading();
+        $.ajax({
+            url:"/seckill/getSeckillResult",
+            type:"post",
+            dataType:"json",
+            data:{
+                goodsId:goodsId
+            },
+            success:function(data){
+                if(data.code == 1){
+                    var status = data.data;
+                    if(status == -1){
+                        layer.msg("秒杀失败！")
+                    }else if(status == 0){
+                        setTimeout(function(data){
+                            getSeckillResult(goodsId)
+                        },1000)
+                    }else{
+                        layer.confirm("恭喜你，秒杀成功！查看订单？", {btn:["确定","取消"]},
+                            function(){
+                                window.location.href="/order_detail.htm?orderId="+result;
+                            },
+                            function(){
+                                layer.closeAll();
+                            });
+                    }
+                }
+            }
+        })
     }
 
 </script>

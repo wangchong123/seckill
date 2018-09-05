@@ -3,6 +3,7 @@ package com.wangchong.seckill.service;
 import com.wangchong.seckill.dao.SeckillGoodsDao;
 import com.wangchong.seckill.entity.Order;
 import com.wangchong.seckill.entity.SeckillGoods;
+import com.wangchong.seckill.entity.SeckillOrder;
 import com.wangchong.seckill.util.UUIDUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -58,8 +59,33 @@ public class SeckillService {
         boolean succ = orderService.reduceScock(goodsId);
         if(succ){
             return orderService.insertOrder(userId,goodsId);
+        }else{
+            setGoodsOver(goodsId);
         }
         return null;
 
+    }
+
+    public Long getSeckillResult(Long userId,Long goodsId){
+        SeckillOrder n =orderService.getSeckillOrder(goodsId,userId);
+        if(n != null )
+            return n.getOrderId(); //秒杀成功
+        else{
+            boolean over = getGoodsOver(goodsId);
+            if(over){
+                return -1L;
+            }else{
+                return 0L;
+            }
+        }
+
+    }
+
+    private void setGoodsOver(Long goodsId){
+        redisTemplate.opsForValue().set("_sckc" + goodsId,true,30,TimeUnit.SECONDS);
+    }
+
+    private boolean getGoodsOver(Long goodsId){
+        return redisTemplate.hasKey("_sckc" + goodsId);
     }
 }

@@ -22,7 +22,7 @@ public class GlobalExceptionHandle {
 
     @ExceptionHandler(value = Exception.class)
     public Result exceptionHandle(HttpServletRequest request,Exception e) {
-        //e.printStackTrace();
+        e.printStackTrace();
         if (e instanceof GlobalException) {
             GlobalException ex = (GlobalException) e;
             return Result.error(ex.getCm());

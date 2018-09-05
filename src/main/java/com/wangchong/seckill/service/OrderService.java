@@ -29,7 +29,7 @@ public class OrderService {
      * @param userId
      * @return
      */
-    public int getSeckillOrder(long goodsId,long userId){
+    public SeckillOrder getSeckillOrder(long goodsId,long userId){
         return orderDao.getByUserIdAndGoodsId(userId,goodsId);
     }
 
@@ -44,6 +44,7 @@ public class OrderService {
         seckillOrder.setOrderId(order.getId());
         seckillOrder.setUserId(userId);
         seckillOrder.setGoodsId(goodsId);
+        orderDao.insertSeckillOrder(seckillOrder);
         return order;
     }
 

@@ -47,17 +47,14 @@ public class GoodsController {
         long begin = goods.getBeginTime().getTime();
         long end = goods.getEndTime().getTime();
         long now = System.currentTimeMillis();
-        int status = 0;
         int remainSecond = 0;
         if(begin > now){//未开始
-            status = 0;
             remainSecond = (int)(begin - now)/1000;
         }else if(end < now){//已结束
-            status = -1;
+            remainSecond = -1;
         }else{//进行中
-            status = 1;
+
         }
-        goods.setStatus(status);
         goods.setRemainSecond(remainSecond);
         return Result.success(goods);
     }

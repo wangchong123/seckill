@@ -2,11 +2,15 @@ package com.wangchong.seckill.controller;
 
 import com.wangchong.seckill.anno.LoginCheck;
 import com.wangchong.seckill.entity.SeckillGoods;
+import com.wangchong.seckill.entity.SeckillOrder;
 import com.wangchong.seckill.entity.User;
+import com.wangchong.seckill.rabbitmq.SeckillMessage;
+import com.wangchong.seckill.rabbitmq.Sender;
 import com.wangchong.seckill.service.GoodsService;
 import com.wangchong.seckill.service.OrderService;
 import com.wangchong.seckill.service.SeckillService;
 import com.wangchong.seckill.util.Result;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
@@ -26,7 +30,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/seckill")
-public class SeckillController {
+public class SeckillController  implements InitializingBean {
 
     @Autowired
     private SeckillService seckillService;
@@ -37,9 +41,13 @@ public class SeckillController {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private Sender sender;
+
     private Map<Long,Boolean>  loadOverMap = new HashMap<>();
 
-    public void goodsInit(){
+    @Override
+    public void afterPropertiesSet() throws Exception {
         List<SeckillGoods> list = seckillService.list();
         if(list != null){
             for (SeckillGoods s : list) {
@@ -48,7 +56,6 @@ public class SeckillController {
             }
         }
     }
-
 
 
     @ResponseBody
@@ -63,7 +70,7 @@ public class SeckillController {
 
     @ResponseBody
     @LoginCheck
-    @RequestMapping("/seckill/{path}")
+    @RequestMapping("/doSeckill/{path}")
     public Result doSeckill(HttpServletRequest request, Long goodsId, @PathVariable("path") String path){
         User user = (User) request.getSession().getAttribute("user");
         boolean checkPath = seckillService.checkPath(path,user.getId(),goodsId);
@@ -75,20 +82,36 @@ public class SeckillController {
             return Result.error();
         }
         //预见库存
-        long stock = redisTemplate.opsForValue().increment("_kc" + goodsId,-1);
+        long stock = redisTemplate.opsForValue().increment("_kc" + goodsId,(int)-1);
+        System.out.println("---------------" + stock);
         if(stock < 0){
             loadOverMap.put(goodsId,true);
             return Result.error();
         }
 
         //判断是否秒杀到
-        int n = orderService.getSeckillOrder(goodsId,user.getId());
-        if(n > 0){
+        SeckillOrder n = orderService.getSeckillOrder(goodsId,user.getId());
+        if(!(n == null)){
             return Result.error();
         }
 
+        //入队
+        SeckillMessage message = new SeckillMessage();
+        message.setGoodsId(goodsId);
+        message.setUserId(user.getId());
+        sender.send(message);
 
-        return Result.success();
+        //返回排队中
+        return Result.success(0);
+    }
+
+    @ResponseBody
+    @LoginCheck
+    @RequestMapping("/getSeckillResult")
+    public Result getSeckillResult(HttpServletRequest request,Long goodsId){
+        User user = (User) request.getSession().getAttribute("user");
+        Long  n =seckillService.getSeckillResult(user.getId(),goodsId);
+        return Result.success(n);
     }
 
 
